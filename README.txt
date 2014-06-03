@@ -1,12 +1,11 @@
 mixpanel-python
 ===============
-This is the official Mixpanel Python library. This library allows for server-side integration of Mixpanel.
+This is a modified version of the official Mixpanel Python library.
 
-Installation
-------------
-The library can be installed using pip:
-
-    pip install mixpanel-py
+This modification allows for events with a time more than 5 naive 24 hr periods
+in the past to utilize Mixpanel's import endpoint instead of their track
+endpoint. The track endpoint is not supported for events more than 5 days in
+the past.
 
 Getting Started
 ---------------
@@ -17,20 +16,10 @@ Typical usage usually looks like this:
 
     mp = Mixpanel(YOUR_TOKEN)
 
-    # tracks an event with certain properties
-    mp.track('button clicked', {'color' : 'blue', 'size': 'large'})
+    # tracks an event with certain properties as usual
+    mp.track('distinct_id', 'button clicked',
+             {'color' : 'blue', 'size': 'large'})
 
-    # sends an update to a user profile
-    mp.people_set(USER_ID, {'$first_name' : 'Amy', 'favorite color': 'red'})
-
-You can use an instance of the Mixpanel class for sending all of your events and people updates.
-
-Additional Information
-----------------------
-[Help Docs](https://www.mixpanel.com/help/reference/python)
-
-[Full Documentation](http://mixpanel.github.io/mixpanel-python/)
-
-[mixpanel-python-asyc](https://github.com/jessepollak/mixpanel-python-async) a third party tool for sending data asynchronously from the tracking python process.
-
-[mixpanel-py3](https://github.com/MyGGaN/mixpanel-python) a fork of this library that supports Python 3, and some additional features, maintained by Fredrik Svensson
+    # track an event and import if necessary (further than 5 days in past)
+    mp.track('distinct_id', 'button clicked', {'time': 1388534400},
+             import_older=True)
